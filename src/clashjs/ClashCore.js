@@ -6,7 +6,7 @@ import executeMovementHelper from "./executeMovementHelper.js";
 var DIRECTIONS = ["north", "east", "south", "west"];
 
 const SUDDEN_DEATH_TURN = 100;
-const ASTEROIDS = true;
+const ASTEROIDS = false;
 
 class ClashJS {
   constructor(playerDefinitionArray, currentStats, evtCallback) {
