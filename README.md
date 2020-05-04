@@ -2,7 +2,7 @@
 
 [![](spec_assets/screenshot.jpg)](http://javierbyte.github.io/clashjs/)
 
-[Demo Online](http://javierbyte.github.io/clashjs/)
+[Demo Online](https://master.d2s799bbd4jz1m.amplifyapp.com/)
 
 This is an experiment. The idea is to create a battle game, where the participants code their AI, and then we make them fight! You can play by adding your own AI to the game!
 
@@ -16,7 +16,7 @@ npm build
 npm start
 ```
 
-Then go to `http://localhost:8080` or `http://localhost:3000`.
+Then go to `http://localhost:3000`.
 
 # How to participate.
 Add your player as specificed in [player definition](#player-definition) in
@@ -55,7 +55,7 @@ The game is simple: we will put all the players in a battle arena, and then make
   * Turn into any of the four directions. (`north`, `east`, `south`, `west`).
   * Shoot. (`shoot`).
 * A player can shoot to try to destroy another player.
-* A player can collect ammo in the moment it steps over it. A new ammo may appear in any moment of the game.
+* A player can collect ammo in the moment it steps over it. A new ammo may appear in any moment of the game. If ammo appears on your square, you will not collect it unless you move off and back on.
 
 ## Game Definitions.
 
@@ -66,7 +66,7 @@ Let the *player definition* (`playerDefinition`) be an object with the player in
 {
   info: {
     name: 'javierbyte',
-    style: 2 // one of the 6 styles (0 to 5)
+    style: 2 // one of the 111 styles (0 to 110) see Rocket icon in game for list of styles
   },
   ai: function(playerState, enemiesStates, gameEnvironment) {
     // think...
@@ -81,6 +81,8 @@ The AI function will receive [`playerState`](#player-state), `enemiesStates` (ar
   * `shoot`. To shoot if the user has enough ammo.
 
 Any other response, trying to move outside the arena size (`gameEnvironment.gridSize`) or trying to shoot without ammo, will result in a no-op.
+
+All positions in the game are in a 2 item array: `[verticalOffset, horizontalOffset]` from upper left corner, zero indexed, so essential `[Y, X]`
 
 ### Player State.
 Let the *player state* (`playerState`) be an object with a player information like the following:
@@ -135,9 +137,7 @@ We can divide the problem in 3 big steps.
 * **Game Core**. This will take the responses that the AI Runners sends, and apply the game logic on them.
   * Kill killed players.
   * Move and turn players.
-  * Collect and count coins.
-  * Generate new coins if necessary.
-  * Set the paralized turns to players that shooted.
+  * Set the results of a shot and kill
   * Count if too many inactive turns had passed.
   * Stop the game when it ends.
 * **Render**. This will take the game state and render it nicely.
