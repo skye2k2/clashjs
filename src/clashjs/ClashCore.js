@@ -2,13 +2,16 @@ import _ from "lodash";
 
 import PlayerClass from "./PlayerClass.js";
 import executeMovementHelper from "./executeMovementHelper.js";
+import debug from 'debug'
+const log = debug('clashjs:core')
 
 var DIRECTIONS = ["north", "east", "south", "west"];
 
-const GRID_SIZE = 6;
+// odd grids have checkerboard pattern, even grids get stripes
+const GRID_SIZE = 7;
 const SUDDEN_DEATH_TURN = 100;
 let asteroidsOn = true;
-let cargoOn = true;
+let cargoOn = false;
 
 let allPositions = []
 
@@ -62,7 +65,7 @@ class ClashJS {
   }
 
   setupGame() {
-    // console.log('setupGame')
+    // log('setupGame')
     this._gameEnvironment = {
       gridSize: GRID_SIZE,
       ammoPosition: [],
@@ -70,7 +73,7 @@ class ClashJS {
       asteroids: [],
     };
     allPositions = _.flatten(_.range(GRID_SIZE).map(x => _.range(GRID_SIZE).map(y => ([x, y]))))
-    // console.log('allPosition', allPositions)
+    // log('allPosition', allPositions)
     this._rounds++;
     this._suddenDeathCount = 0;
     this._playerInstances = _.shuffle(this._playerInstances);
@@ -94,7 +97,7 @@ class ClashJS {
     this._currentPlayer = 0;
     this._createAmmo();
     this._createCargo();
-    // console.log('setupGame end', this.getState())
+    // log('setupGame end', this.getState())
   }
 
   _createAmmo() {
@@ -102,7 +105,7 @@ class ClashJS {
       this._gameEnvironment.ammoPosition.length ===
       Math.pow(this._gameEnvironment.gridSize, 2)
     ) {
-      console.log("Out of places to create ammo, skipping ...");
+      log("Out of places to create ammo, skipping ...");
       return;
     }
     var newAmmoPosition = [
@@ -127,7 +130,7 @@ class ClashJS {
     // find open spaces with no ammo and no players
     const open = this._findOpenPositions()
     if (!open.length) {
-      console.log("Out of places to create cargo, skipping ...");
+      log("Out of places to create cargo, skipping ...");
       return;
     }
     var newCargo = {
@@ -168,7 +171,7 @@ class ClashJS {
       });
     }
 
-    console.log("*** Incoming asteroids", this._gameEnvironment.asteroids);
+    log("*** Incoming asteroids", this._gameEnvironment.asteroids);
   }
 
   _createAsteroids2() {
@@ -185,7 +188,7 @@ class ClashJS {
           detonateIn: 3 + _.random(3),
           style: 7,
         });
-        console.log('*** new random asteroid')
+        log('*** new random asteroid')
 
       }
     } else {
@@ -200,11 +203,11 @@ class ClashJS {
           detonateIn: 3 + _.random(3),
           style: 7,
         });
-        console.log('*** new targeted asteroid')
+        log('*** new targeted asteroid')
       }
     }
 
-    console.log("*** Incoming asteroids", this._gameEnvironment.asteroids);
+    log("*** Incoming asteroids", this._gameEnvironment.asteroids);
   }
 
   getState() {
@@ -219,9 +222,9 @@ class ClashJS {
   }
 
   nextPly() {
-    // console.log('nextply', this._currentPlayer, this.getState())
+    // log('nextply', this._currentPlayer, this.getState())
 
-    // this._suddenDeathCount > 0 && console.log('_suddenDeathCount', this._suddenDeathCount)
+    // this._suddenDeathCount > 0 && log('_suddenDeathCount', this._suddenDeathCount)
     if (this._suddenDeathCount > SUDDEN_DEATH_TURN * this._getAlivePlayerCount()) {
       this._evtCallback("DRAW");
       this._handleCoreAction("DRAW");
@@ -249,7 +252,7 @@ class ClashJS {
         _.cloneDeep(this._gameEnvironment, true)
       )
       const t1 = performance.now()
-      // console.log('player action', this._currentPlayer, playerAction)
+      log('player action', this._currentPlayer, this._playerStates[this._currentPlayer].name, playerAction)
       this._savePlayerAction(
         this._currentPlayer,
         playerAction
@@ -258,11 +261,11 @@ class ClashJS {
       this._gameStats[playerId].calcTime += (t1 - t0)
       this._gameStats[playerId].turns++
     }
-    // console.log('setting to next player')
+    // log('setting to next player')
     this._currentPlayer = (this._currentPlayer + 1) % this._playerInstances.length;
 
     if (this._currentPlayer === 0) {
-      console.log(
+      log(
         "*** New Loop",
         JSON.stringify(this._gameEnvironment.asteroids)
       );
@@ -274,20 +277,20 @@ class ClashJS {
       // decrement all asteroid timers
 
       this._gameEnvironment.asteroids.forEach((asteroid, index, array) => {
-        // console.log('*** decrementing detonateIn for ', asteroid.position, asteroid.detonateIn)
+        // log('*** decrementing detonateIn for ', asteroid.position, asteroid.detonateIn)
         asteroid.detonateIn--;
         if (asteroid.detonateIn === 0) {
           asteroid.style = _.random(10, 15);
 
           // blow the thing up
-          console.log("*** detonating asteroid", asteroid);
+          log("*** detonating asteroid", asteroid);
           this._playerStates.forEach((player) => {
             if (
               player.isAlive &&
               asteroid.position[0] === player.position[0] &&
               asteroid.position[1] === player.position[1]
             ) {
-              console.log("&&& asteroid killed player", player.name);
+              log("&&& asteroid killed player", player.name);
               // debugger;
               this._handleCoreAction("DESTROY", { player });
             }
@@ -296,10 +299,10 @@ class ClashJS {
       });
       // clear out detonated asteroids
       this._gameEnvironment.asteroids = this._gameEnvironment.asteroids.filter(
-        (asteroid) => asteroid.detonateIn > -5
+        (asteroid) => asteroid.detonateIn > -3
       );
 
-      console.log(
+      log(
         "*** asteroids after detonate",
         JSON.stringify(this._gameEnvironment.asteroids)
       );
@@ -313,7 +316,7 @@ class ClashJS {
       }
 
       if (survivors.length === 1) {
-        console.log("survivor", survivors[0]);
+        log("survivor", survivors[0]);
         this._handleCoreAction("WIN", {
           winner: { getId: () => survivors[0].id },
         });
@@ -341,13 +344,13 @@ class ClashJS {
 
   _handleCoreAction(action, data) {
     if (action === "CARGO") {
-      console.log("*** core action CARGO", data);
+      log("*** core action CARGO", data);
       const { player, cargo } = data;
       let stats = this._gameStats[player.id];
       stats.cargo += cargo.value;
     }
     if (action === "DESTROY") {
-      console.log("*** core action DESTROY", data);
+      log("*** core action DESTROY", data);
       const { player } = data;
       player.isAlive = false;
       let stats = this._gameStats[player.id];
@@ -438,17 +441,17 @@ class ClashJS {
     const playerPositions = this._playerStates.map(player => player.position)
     const cargoPositions = this._gameEnvironment.cargos.filter(cargo => cargo.position)
     const result = _.differenceWith(allPositions, _.concat(playerPositions, ammos, cargoPositions), _.isEqual);
-    // console.log('findOpenPositions', result.length, playerPositions.length, ammos.length, cargoPositions.length)
-    // console.log('findOpenPositions', result, playerPositions, ammos, cargoPositions)
+    // log('findOpenPositions', result.length, playerPositions.length, ammos.length, cargoPositions.length)
+    // log('findOpenPositions', result, playerPositions, ammos, cargoPositions)
     return result
   }
 
   setAsteroidsOn(value) {
-    // console.log('setAsteroidsOn', value, asteroidsOn)
+    // log('setAsteroidsOn', value, asteroidsOn)
     asteroidsOn = value
   }
   setCargoOn(value) {
-    // console.log('setCargoOn', value, cargoOn)
+    // log('setCargoOn', value, cargoOn)
     cargoOn = value
   }
 }

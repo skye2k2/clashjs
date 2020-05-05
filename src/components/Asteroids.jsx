@@ -96,22 +96,6 @@ const explosionframes = <Spritesheet
   isResponsive={false}
 />
 
-const expl2 = <Spritesheet
-  image={`${process.env.PUBLIC_URL}/static/explosions/expl2.png`}
-  widthFrame={256 / 4}
-  heightFrame={192 / 3}
-  steps={12}
-  fps={10}
-/>
-
-const boom3 = <Spritesheet
-  image={`${process.env.PUBLIC_URL}/static/explosions/boom3.png`}
-  widthFrame={128}
-  heightFrame={128}
-  steps={64}
-  fps={60}
-/>
-
 const explosion2 = <Spritesheet
   image={`${process.env.PUBLIC_URL}/static/explosions/explosion2.png`}
   widthFrame={100}
@@ -168,27 +152,9 @@ const explosion3 = <Spritesheet
   fps={12}
 />
 
-const explosion4 = <Spritesheet
-  image={`${process.env.PUBLIC_URL}/static/explosions/explosion4.png`}
-  widthFrame={2176 / 17}
-  heightFrame={128}
-  steps={17}
-  fps={12}
-/>
-
-const explosion5 = <Spritesheet
-  image={`${process.env.PUBLIC_URL}/static/explosions/explosion5.png`}
-  widthFrame={2176 / 17}
-  heightFrame={128}
-  steps={17}
-  fps={12}
-/>
-
-
-
 // const explosions = [expl2, explosion, explosion2, explosion_1, explosion_3, explosion_4, explosionframes, explosionstrip13, boom3, explosion3, explosion4, explosion5]
-const explosions = [explosion, explosion2, explosion_3, explosion_4, explosionframes, explosion3]
-const exp = _.sample(explosions)
+// const explosions = [explosion, explosion2, explosion_3, explosion_4, explosionframes, explosion3]
+// const exp = _.sample(explosions)
 
 
 
@@ -264,8 +230,8 @@ const bubblesSprite = createSprite({
   rows: 6,
   duration: 2,
 })
-console.log('bubbles', bubblesSprite)
-console.log('monster', monsterSprite)
+// console.log('bubbles', bubblesSprite)
+// console.log('monster', monsterSprite)
 function createSprite({ url, width, height, columns, rows, duration }) {
   return {
     image: url,
@@ -295,17 +261,17 @@ function getOpacity(detonateIn) {
   }
 }
 class Asteroids extends React.Component {
-  componentDidMount() {
-    explosions.forEach(sprite => {
-      console.log('sprite', sprite, sprite.props.image)
-      new Image().src = sprite.props.image
-    })
-  }
+  // componentDidMount() {
+  //   explosions.forEach(sprite => {
+  //     // console.log('sprite', sprite, sprite.props.image)
+  //     new Image().src = sprite.props.image
+  //   })
+  // }
   render() {
     // return null
     var { gridSize, asteroids } = this.props;
-    console.log('render Asteroids', asteroids)
-    var tileSize = 100 / gridSize;
+    // console.log('render Asteroids', asteroids)
+    var tileSize = 96 / gridSize;
     var astroidRenderer = _.map(asteroids, (asteroid, index) => {
       return asteroid.style < 10 ? (
         <div
@@ -320,13 +286,16 @@ class Asteroids extends React.Component {
             opacity: getOpacity(asteroid.detonateIn),
           }}
         >{asteroid.detonateIn}</div>) : (
-          <div className="clash-asteroid" style={{
-            border: '1px dashed red',
-            top: tileSize * asteroid.position[0] + "vmin",
-            left: tileSize * asteroid.position[1] + "vmin",
-            width: tileSize + "vmin",
-            height: tileSize + "vmin"
-          }}
+          <div
+            key={index}
+            className="clash-asteroid"
+            style={{
+              border: asteroid.detonateIn === 0 ? '1px dashed red' : 'none',
+              top: tileSize * asteroid.position[0] + "vmin",
+              left: tileSize * asteroid.position[1] + "vmin",
+              width: tileSize + "vmin",
+              height: tileSize + "vmin"
+            }}
           >
             {explosion2}
           </div>
@@ -365,13 +334,13 @@ class Asteroids extends React.Component {
     // testasteroids = testasteroids.concat(explosions.map((exp, i) => ({ style: 10 + i, position: [2 + Math.floor(i / gridSize), i % gridSize] })))
     // testasteroids = testasteroids.concat(explosions.map((exp, i) => ({ style: 10 + i, position: [4 + Math.floor(i / gridSize), i % gridSize] })))
     // const asteroid = _.sample(testasteroids)
-    console.log('test', testasteroids)
+    // console.log('test', testasteroids)
     return (
       <div className="clash-layer animation-glow" >
         {testasteroids.map(asteroid => {
           console.log('testast', asteroid, tileSize)
           const sprite = sprites[asteroid.style - 10]
-          console.log('sprite', sprite)
+          // console.log('sprite', sprite)
           return (<div key={Math.random()} className="clash-asteroid" style={{
             border: '1px dashed green',
             top: tileSize * asteroid.position[0] + "vmin",

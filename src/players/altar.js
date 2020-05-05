@@ -4,7 +4,7 @@ var ORIENTATION = { north: 'vertical', east: 'horizontal', south: 'vertical', we
 var manuelmhtr = {
   info: {
     name: 'Altar',
-    stylex: 73
+    style: 73
   },
   ai: function (playerState, enemiesStates, gameEnvironment) {
     var response;
@@ -106,22 +106,22 @@ var manuelmhtr = {
     }
 
     function getMovesTo(position, direction, ammo) {
-        var moves = utils.getDistance(position, ammo);
-        // Do we need to turn to start?
-        if (direction === 'north' && position[0] <= ammo[0]) { // We are pointed to decreasing rows
-            moves += 1;
-        } else if (direction === 'east' && position[1] >= ammo[1]) { // We are pointed to increasing columns
-            moves += 1;
-        } else if (direction === 'south' && position[0] >= ammo[0]) { // We are pointed to increasing rows
-            moves += 1;
-        } else if (direction === 'west' && position[0] <= ammo[0]) { // We are pointed to decreasing columns
-            moves += 1;
-        }
-        // Do we need to turn during the maneuver?
-        if (!isAligned(position, ammo)) {
-            moves += 1;
-        }
-        return moves;
+      var moves = utils.getDistance(position, ammo);
+      // Do we need to turn to start?
+      if (direction === 'north' && position[0] <= ammo[0]) { // We are pointed to decreasing rows
+        moves += 1;
+      } else if (direction === 'east' && position[1] >= ammo[1]) { // We are pointed to increasing columns
+        moves += 1;
+      } else if (direction === 'south' && position[0] >= ammo[0]) { // We are pointed to increasing rows
+        moves += 1;
+      } else if (direction === 'west' && position[0] <= ammo[0]) { // We are pointed to decreasing columns
+        moves += 1;
+      }
+      // Do we need to turn during the maneuver?
+      if (!isAligned(position, ammo)) {
+        moves += 1;
+      }
+      return moves;
     }
 
     function getNearestEnemy(position) {

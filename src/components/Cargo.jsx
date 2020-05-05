@@ -29,7 +29,7 @@ class Cargo extends React.Component {
   render() {
     var { gridSize, cargos } = this.props;
 
-    var tileSize = 100 / gridSize;
+    var tileSize = 96 / gridSize;
 
     var cargoRender = _.map(cargos, (cargo, cargoIndex) => {
       return (
