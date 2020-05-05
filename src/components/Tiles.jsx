@@ -8,7 +8,7 @@ class Tiles extends React.Component {
   render() {
     var { gridSize } = this.props;
 
-    var tileSize = 100 / gridSize;
+    var tileSize = 96 / gridSize;
     var i;
 
     var tileRender = [];

@@ -6,7 +6,7 @@ class Ammos extends React.Component {
   render() {
     var { gridSize, ammoPosition } = this.props;
 
-    var tileSize = 100 / gridSize;
+    var tileSize = 96 / gridSize;
 
     var ammoRender = _.map(ammoPosition, (ammoPos, ammoIndex) => {
       return (
