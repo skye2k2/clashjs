@@ -2,27 +2,40 @@ import React from "react";
 import _ from "lodash";
 import { Grid, Cell } from "styled-css-grid";
 import styled from 'styled-components'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrophy } from "@fortawesome/free-solid-svg-icons";
+
 import Modal from './Modal';
 
 const Title = styled.header`
   text-align: center;
   margin-top: -1.5em;
 `
+
+const Winner = styled.span`
+  padding: 0 2em;
+  font-size: 2em;
+`
+
 export default function StatsModal({ open, onClose, rounds,
   total,
   playerStates,
-  stats }) {
+  stats,
+  gameState,
+}) {
   stats = _.map(stats, playerStats => playerStats);
   stats = _.sortBy(stats, playerStats => playerStats.kills * -1);
   stats = _.sortBy(stats, playerStats => playerStats.wins * -1);
+  const duration = ((gameState.endTime || Date.now()) - gameState.startTime) / 1000
   return (
-    <Modal open={open} onClose={onClose} center>
+    < Modal open={open} onClose={onClose} center>
       <Title><h3>Stats</h3></Title>
       <div className="stats-modal">
+        Duration: {duration.toFixed(1)}s
+        {gameState.finished && <Winner><FontAwesomeIcon icon={faTrophy} color="#d4af37" />&nbsp;The winner is {stats[0].name}</Winner>}
         <table>
           <thead>
             <tr>
-              {/* <th /> */}
               <th>
                 Round {rounds}/{total}
               </th>
@@ -45,8 +58,7 @@ export default function StatsModal({ open, onClose, rounds,
             {_.map(stats, (playerStats, index) => {
               // console.log('playerStats', playerStats)
               return (
-                <tr key={index} className={playerStats.isAlive ? "" : "player-dead"}>
-                  {/* <td className="player-dead-emoji">💀</td> */}
+                <tr key={playerStats.name}>
                   <td className='player-name'>{playerStats.name}</td>
                   <td className='stats-results'>{playerStats.wins}</td>
                   <td className='stats-results'>{playerStats.winrate}%</td>

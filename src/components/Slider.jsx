@@ -16,16 +16,6 @@ const CustomLabels = styled.div`
   display: none;
 }
 
-.xrangeslider__label {
-  top: 18px
-}
-
-.xrangeslider__handle-tooltip {
-  width: 60px;
-  left: 50%;
-  transform: translate3d(-50%,0,0)
-}
-
 .rangeslider__handle-label {
   color: black;
   position: absolute;
@@ -39,13 +29,11 @@ const CustomLabels = styled.div`
 
 export default function RangeSlider({ speed, handleChangeSpeed }) {
   const [value, setValue] = React.useState(speed)
-  function updateSpeed(newSpeed) {
-    setValue(newSpeed)
-    // handleChangeSpeed(newSpeed)
-  }
+  React.useEffect(() => {
+    setValue(speed)
+  }, [speed])
   const horizontalLabels = {
     0: 'Fast',
-    // 200: 'Medium',
     1000: 'Slow'
   }
 
@@ -56,9 +44,8 @@ export default function RangeSlider({ speed, handleChangeSpeed }) {
         max={1000}
         value={value}
         labels={horizontalLabels}
-        format={value => value}
         handleLabel={String(value)}
-        onChange={updateSpeed}
+        onChange={setValue}
         onChangeComplete={() => handleChangeSpeed(value)}
       />
     </CustomLabels>

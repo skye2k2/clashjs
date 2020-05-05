@@ -247,9 +247,15 @@
     }
 
     .notifications {
-      align-self: end;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
       z-index: 9000;
+    }
 
+    .notifications p {
+      line-height: 1;
+      margin: 0.2em;
     }
 
     .animation-shot {
@@ -264,6 +270,7 @@
       overflow-y: scroll;
       /* max-width: 250px; */
       z-index: 7;
+      height: 100vh;
     }
 
     .control-panel {

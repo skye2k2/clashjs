@@ -17,6 +17,8 @@ import StatsModal from './StatsModal'
 import ClashJS from "../clashjs/ClashCore.js";
 
 import playerObjects from "../Players.js";
+import debug from 'debug'
+const log = debug('clashjs:Clash')
 var playerArray = _.shuffle(_.map(playerObjects, (el) => el.default ? el.default : el));
 
 var killsStack = [];
@@ -41,10 +43,10 @@ class Clash extends React.Component {
     this.state = {
       running: false,
       showDebug: false,
-      sounds: true,
+      sounds: false,
       music: false,
       asteroidsOn: true,
-      cargoOn: true,
+      cargoOn: false,
       clashjs: window.ClashInstance.getState(),
       shoots: [],
       speed: DEFAULT_SPEED,
@@ -58,7 +60,7 @@ class Clash extends React.Component {
 
   componentDidMount() {
     window.addEventListener("keydown", (evt) => {
-      // console.log('keydown', evt.code, evt.key)
+      // log('keydown', evt.code, evt.key)
       if (evt.key === "d") {
         this.setState((prevState) => ({
           showDebug: !prevState.showDebug,
@@ -72,6 +74,12 @@ class Clash extends React.Component {
       }
       if (evt.code === "KeyM") {
         this.handleToggleMusic()
+      }
+      if (evt.key === "0") {
+        this.handleChangeSpeed(0)
+      }
+      if (evt.key === "9") {
+        this.handleChangeSpeed(1000)
       }
     });
   }
@@ -114,7 +122,7 @@ class Clash extends React.Component {
   }
 
   handleToggleMusic() {
-    // console.log('toggle music', this.state.music)
+    // log('toggle music', this.state.music)
     this.setState(
       (prevState) => ({
         music: !prevState.music,
@@ -171,7 +179,7 @@ class Clash extends React.Component {
   }
 
   handleChangeSpeed(newSpeed) {
-    // console.log('handleChangeSpeed', newSpeed)
+    // log('handleChangeSpeed', newSpeed)
     this.setState({
       speed: newSpeed
     })
@@ -183,10 +191,10 @@ class Clash extends React.Component {
     if (this.nextTurnTimeout) clearTimeout(this.nextTurnTimeout);
 
     window.ClashInstance.setupGame();
-    // console.log('newGame setState')
+    // log('newGame setState')
     this.setState(
       (state) => {
-        // console.log('newGame setState state', state)
+        // log('newGame setState state', state)
         return {
           clashjs: window.ClashInstance.getState(),
           speed: DEFAULT_SPEED,
@@ -195,7 +203,7 @@ class Clash extends React.Component {
         };
       },
       () => {
-        // console.log('newGame setState callback', this.nextTurnTimeout, this.state.clashjs)
+        // log('newGame setState callback', this.nextTurnTimeout, this.state.clashjs)
         if (this.nextTurnTimeout) clearTimeout(this.nextTurnTimeout);
         this.nextTurnTimeout = window.setTimeout(() => {
           this.nextTurn();
@@ -205,7 +213,13 @@ class Clash extends React.Component {
   }
 
   nextTurn() {
-    // console.log('nextTurn', this.state)
+    // log('nextTurn', this.state)
+    if (this.state.startTime === undefined) {
+      if (this.state.music) {
+        startMusic()
+      }
+      this.setState({ startTime: Date.now() })
+    }
     if (!this.state.running || this.state.finished) return;
 
     var currentGameIndex = this.state.currentGameIndex;
@@ -272,7 +286,7 @@ class Clash extends React.Component {
   }
 
   _handleDestroy({ player }) {
-    console.log("*** handleDestroy", player);
+    log("*** handleDestroy", player);
     let notification = ["An Asteroid", "destroyed", player.name].join(" ");
 
     const { notifications } = this.state;
@@ -311,6 +325,8 @@ class Clash extends React.Component {
       speed: 0,
       // notifications: [],
       finished: true,
+      endTime: Date.now(),
+      duration: Date.now() - this.state.startTime,
       showStats: true,
     });
   }
@@ -346,7 +362,7 @@ class Clash extends React.Component {
     });
     if (streakCount > 1) {
       const currentStreak = this.state.clashjs.gameStats[killer.getId()].killStreak
-      // console.log('killstreak', streakCount, currentStreak, Math.max(streakCount, currentStreak || 0), killsStack)
+      // log('killstreak', streakCount, currentStreak, Math.max(streakCount, currentStreak || 0), killsStack)
       window.ClashInstance._gameStats[killer.getId()].killStreak = Math.max(streakCount, currentStreak || 0)
     }
     switch (streakCount) {
@@ -428,6 +444,7 @@ class Clash extends React.Component {
       <>
         <Grid
           columns="1fr 100vmin 1fr"
+          rows="auto 1fr"
           areas={[
             "control game stats",
             "debug   game notifications",
@@ -489,7 +506,9 @@ class Clash extends React.Component {
           rounds={rounds}
           total={totalRounds}
           playerStates={playerStates}
-          stats={gameStats} />
+          stats={gameStats}
+          gameState={this.state}
+        />
       </>
     );
   }

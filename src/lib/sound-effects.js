@@ -1,4 +1,4 @@
-let soundsOn = true
+let soundsOn = false
 let musicVolume = 0.4
 
 export const lasers = {
