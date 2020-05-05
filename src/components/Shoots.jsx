@@ -11,7 +11,7 @@ class Shoots extends React.Component {
   render() {
     var { shoots, gridSize } = this.props;
 
-    var tileSize = 100 / gridSize;
+    var tileSize = 96 / gridSize;
 
     var shootsRender = _.map(shoots, (el, index) => {
       return (

@@ -30,7 +30,7 @@ class Players extends React.Component {
     var { playerDirections } = this.state;
     var { gridSize, playerStates, playerInstances } = this.props;
 
-    var tileSize = 100 / gridSize;
+    var tileSize = 96 / gridSize;
 
     var playerRender = _.map(playerStates, (playerData, playerIndex) => {
       if (!playerData.isAlive) return null;
