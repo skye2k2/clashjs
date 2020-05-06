@@ -2,25 +2,26 @@ import _ from "lodash";
 
 import PlayerClass from "./PlayerClass.js";
 import executeMovementHelper from "./executeMovementHelper.js";
-import debug from 'debug'
-const log = debug('clashjs:core')
+import debug from "debug";
+const log = debug("clashjs:core");
+const playerlog = debug("clashjs:bot:")
 
 var DIRECTIONS = ["north", "east", "south", "west"];
 
 // odd grids have checkerboard pattern, even grids get stripes
 const GRID_SIZE = 7;
 const SUDDEN_DEATH_TURN = 100;
-let asteroidsOn = true;
+let asteroidsOn = false;
 let cargoOn = false;
 
-let allPositions = []
+let allPositions = [];
 
 class ClashJS {
   constructor(playerDefinitionArray, currentStats, evtCallback) {
     // const clashjsTarget = class ClashJSTarget extends EventTarget {};
     // this.target = new clashjsTarget();
 
-    this._totalRounds = playerDefinitionArray.length * 2 + 6;
+    this._totalRounds = Math.min(playerDefinitionArray.length * 2 + 6, 20);
     this._rounds = 0;
     this._gameStats = currentStats || {};
     this._evtCallback = (msg, data) => {
@@ -33,24 +34,27 @@ class ClashJS {
       let player = new PlayerClass(playerDefinition);
       this._gameStats[player.getId()] = {
         name: player.getName(),
+        id: player.getId(),
+        team: player.getInfo().team,
         deaths: 0,
         kills: 0,
         kdr: 0,
         wins: 0,
         winrate: 0,
+        ammo: 0,
         cargo: 0,
         turns: 0,
         calcTime: 0,
         actions: {
-          "move": 0,
-          "shoot": 0,
-          "turn": 0,
-          "north": 0,
-          "east": 0,
-          "south": 0,
-          "west": 0,
-          "wait": 0
-        }
+          move: 0,
+          shoot: 0,
+          turn: 0,
+          north: 0,
+          east: 0,
+          south: 0,
+          west: 0,
+          wait: 0,
+        },
       };
       return player;
     });
@@ -72,7 +76,9 @@ class ClashJS {
       cargos: [],
       asteroids: [],
     };
-    allPositions = _.flatten(_.range(GRID_SIZE).map(x => _.range(GRID_SIZE).map(y => ([x, y]))))
+    allPositions = _.flatten(
+      _.range(GRID_SIZE).map((x) => _.range(GRID_SIZE).map((y) => [x, y]))
+    );
     // log('allPosition', allPositions)
     this._rounds++;
     this._suddenDeathCount = 0;
@@ -126,9 +132,9 @@ class ClashJS {
   }
 
   _createCargo() {
-    if (!cargoOn) return
+    if (!cargoOn) return;
     // find open spaces with no ammo and no players
-    const open = this._findOpenPositions()
+    const open = this._findOpenPositions();
     if (!open.length) {
       log("Out of places to create cargo, skipping ...");
       return;
@@ -136,7 +142,7 @@ class ClashJS {
     var newCargo = {
       type: _.random(15),
       value: _.random(1, 5),
-      position: _.sample(open)
+      position: _.sample(open),
     };
 
     if (
@@ -178,9 +184,10 @@ class ClashJS {
     const alivePlayers = this._playerStates.filter((p) => p.isAlive);
 
     if (alivePlayers.length > 3) {
-      const numAsteroids = Math.min(_.random(Math.floor(
-        Math.pow(this._gameEnvironment.gridSize, 2) * 0.1
-      )), 4);
+      const numAsteroids = Math.min(
+        _.random(Math.floor(Math.pow(this._gameEnvironment.gridSize, 2) * 0.1)),
+        4
+      );
 
       for (let i = 0; i < numAsteroids; i++) {
         this._gameEnvironment.asteroids.push({
@@ -188,12 +195,11 @@ class ClashJS {
           detonateIn: 3 + _.random(3),
           style: 7,
         });
-        log('*** new random asteroid')
-
+        log("*** new random asteroid");
       }
     } else {
       // TARGET ASTEROIDS
-      const numAsteroids = _.random(alivePlayers.length)
+      const numAsteroids = _.random(alivePlayers.length);
       for (let i = 0; i < numAsteroids; i++) {
         const adjoiningPositions = this._findAdjoiningPositions(
           alivePlayers[i].position
@@ -203,7 +209,7 @@ class ClashJS {
           detonateIn: 3 + _.random(3),
           style: 7,
         });
-        log('*** new targeted asteroid')
+        log("*** new targeted asteroid");
       }
     }
 
@@ -225,7 +231,10 @@ class ClashJS {
     // log('nextply', this._currentPlayer, this.getState())
 
     // this._suddenDeathCount > 0 && log('_suddenDeathCount', this._suddenDeathCount)
-    if (this._suddenDeathCount > SUDDEN_DEATH_TURN * this._getAlivePlayerCount()) {
+    if (
+      this._suddenDeathCount >
+      SUDDEN_DEATH_TURN * this._getAlivePlayerCount()
+    ) {
       this._evtCallback("DRAW");
       this._handleCoreAction("DRAW");
     }
@@ -245,30 +254,30 @@ class ClashJS {
     });
 
     if (this._playerStates[this._currentPlayer].isAlive) {
-      const t0 = performance.now()
+      const t0 = performance.now();
       const playerAction = this._playerInstances[this._currentPlayer].execute(
         clonedStates[this._currentPlayer],
         otherPlayers,
         _.cloneDeep(this._gameEnvironment, true)
-      )
-      const t1 = performance.now()
-      log('player action', this._currentPlayer, this._playerStates[this._currentPlayer].name, playerAction)
-      this._savePlayerAction(
+      );
+      const t1 = performance.now();
+      playerlog(
+        "player action",
         this._currentPlayer,
+        this._playerStates[this._currentPlayer].name,
         playerAction
       );
-      const playerId = this._playerInstances[this._currentPlayer]._id
-      this._gameStats[playerId].calcTime += (t1 - t0)
-      this._gameStats[playerId].turns++
+      this._savePlayerAction(this._currentPlayer, playerAction);
+      const playerId = this._playerInstances[this._currentPlayer]._id;
+      this._gameStats[playerId].calcTime += t1 - t0;
+      this._gameStats[playerId].turns++;
     }
     // log('setting to next player')
-    this._currentPlayer = (this._currentPlayer + 1) % this._playerInstances.length;
+    this._currentPlayer =
+      (this._currentPlayer + 1) % this._playerInstances.length;
 
     if (this._currentPlayer === 0) {
-      log(
-        "*** New Loop",
-        JSON.stringify(this._gameEnvironment.asteroids)
-      );
+      log("*** New Loop", JSON.stringify(this._gameEnvironment.asteroids));
 
       if (asteroidsOn && Math.random() < 0.33) {
         this._createAsteroids2();
@@ -321,7 +330,7 @@ class ClashJS {
           winner: { getId: () => survivors[0].id },
         });
         this._evtCallback("WIN", {
-          winner: { getId: () => survivors[0].id },
+          winner: survivors[0],
         });
       }
     }
@@ -331,8 +340,8 @@ class ClashJS {
       this._playerStates.length / 1.2 &&
       Math.random() > 0.92
     ) {
-      this._createAmmo()
-      this._createCargo()
+      this._createAmmo();
+      this._createCargo();
     }
 
     // if (Math.random() > 0.98) {
@@ -348,6 +357,12 @@ class ClashJS {
       const { player, cargo } = data;
       let stats = this._gameStats[player.id];
       stats.cargo += cargo.value;
+    }
+    if (action === "AMMO") {
+      log("*** core action AMMO", data);
+      const { player } = data;
+      let stats = this._gameStats[player.id];
+      stats.ammo++;
     }
     if (action === "DESTROY") {
       log("*** core action DESTROY", data);
@@ -400,11 +415,11 @@ class ClashJS {
   }
 
   _savePlayerAction(playerIndex, playerAction) {
-    const playerId = this._playerInstances[playerIndex]._id
-    const action = playerAction ? playerAction : 'wait'
-    this._gameStats[playerId].actions[action]++
+    const playerId = this._playerInstances[playerIndex]._id;
+    const action = playerAction ? playerAction : "wait";
+    this._gameStats[playerId].actions[action]++;
     if (DIRECTIONS.includes(playerAction)) {
-      this._gameStats[playerId].actions.turn++
+      this._gameStats[playerId].actions.turn++;
     }
     this._playerStates = executeMovementHelper({
       playerIndex: playerIndex,
@@ -437,22 +452,28 @@ class ClashJS {
   }
 
   _findOpenPositions() {
-    const ammos = this._gameEnvironment.ammoPosition
-    const playerPositions = this._playerStates.map(player => player.position)
-    const cargoPositions = this._gameEnvironment.cargos.filter(cargo => cargo.position)
-    const result = _.differenceWith(allPositions, _.concat(playerPositions, ammos, cargoPositions), _.isEqual);
+    const ammos = this._gameEnvironment.ammoPosition;
+    const playerPositions = this._playerStates.map((player) => player.position);
+    const cargoPositions = this._gameEnvironment.cargos.filter(
+      (cargo) => cargo.position
+    );
+    const result = _.differenceWith(
+      allPositions,
+      _.concat(playerPositions, ammos, cargoPositions),
+      _.isEqual
+    );
     // log('findOpenPositions', result.length, playerPositions.length, ammos.length, cargoPositions.length)
     // log('findOpenPositions', result, playerPositions, ammos, cargoPositions)
-    return result
+    return result;
   }
 
   setAsteroidsOn(value) {
     // log('setAsteroidsOn', value, asteroidsOn)
-    asteroidsOn = value
+    asteroidsOn = value;
   }
   setCargoOn(value) {
     // log('setCargoOn', value, cargoOn)
-    cargoOn = value
+    cargoOn = value;
   }
 }
 

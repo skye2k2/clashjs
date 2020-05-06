@@ -5,6 +5,8 @@ class Stats extends React.Component {
   render() {
     let { stats, rounds, total } = this.props;
     stats = _.map(stats, playerStats => playerStats);
+    stats = _.sortBy(stats, playerStats => playerStats.ammo * -1);
+    stats = _.sortBy(stats, playerStats => playerStats.kills * -1);
     stats = _.sortBy(stats, playerStats => playerStats.wins * -1);
     return (
       <div className="stats">
@@ -18,7 +20,7 @@ class Stats extends React.Component {
               <th>Wins</th>
               <th>Rate</th>
               <th>K/D/R</th>
-              <th>Cargo</th>
+              <th>Ammo</th>
             </tr>
           </thead>
           <tbody>
@@ -26,11 +28,11 @@ class Stats extends React.Component {
               return (
                 <tr key={index} className={playerStats.isAlive ? "" : "player-dead"}>
                   <td className="player-dead-emoji">💀</td>
-                  <td className='player-name'>{playerStats.name}</td>
+                  <td className='player-name'>{playerStats.name} {playerStats.team ? `[${playerStats.team}]` : ''}</td>
                   <td className='stats-results'>{playerStats.wins}</td>
                   <td className='stats-results'>{playerStats.winrate}%</td>
                   <td className='stats-results'>{playerStats.kills}/{playerStats.deaths}/{playerStats.kdr.toFixed(1)}</td>
-                  <td className='stats-results'>{playerStats.cargo}</td>
+                  <td className='stats-results'>{playerStats.ammo}</td>
                 </tr>
               );
             })}

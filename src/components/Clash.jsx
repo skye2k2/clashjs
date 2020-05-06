@@ -1,7 +1,14 @@
 import React from "react";
 import _ from "lodash";
 import { Grid, Cell } from "styled-css-grid";
-import { enableSounds, disableSounds, playSound, startMusic, stopMusic, streaks } from "./../lib/sound-effects";
+import {
+  enableSounds,
+  disableSounds,
+  playSound,
+  startMusic,
+  stopMusic,
+  streaks,
+} from "./../lib/sound-effects";
 import Tiles from "./Tiles.jsx";
 import Ammos from "./Ammos.jsx";
 import Cargo from "./Cargo.jsx";
@@ -12,14 +19,33 @@ import Shoots from "./Shoots.jsx";
 import Notifications from "./Notifications.jsx";
 import ControlPanel from "./ControlPanel.jsx";
 import DebugPanel from "./DebugPanel.jsx";
-import StatsModal from './StatsModal'
+import StatsModal from "./StatsModal";
 
 import ClashJS from "../clashjs/ClashCore.js";
 
 import playerObjects from "../Players.js";
-import debug from 'debug'
-const log = debug('clashjs:Clash')
-var playerArray = _.shuffle(_.map(playerObjects, (el) => el.default ? el.default : el));
+
+import debug from "debug";
+
+const log = debug("clashjs:Clash");
+
+// Filter
+
+var playerArray = _.shuffle(
+  _.map(playerObjects, (el) => (el.default ? el.default : el))
+);
+
+const all = (bot) => true;
+const groupA = (bot) => _.includes([1, 2, 3, 4, 5], bot.info.team);
+const groupB = (bot) => _.includes([6, 7, 8, 9, 10], bot.info.team);
+const groupC = (bot) => _.includes([11, 12, 13, 14, 15], bot.info.team);
+const groupD = (bot) => _.includes([16, 17, 18, 19, 20], bot.info.team);
+const groupE = (bot) => _.includes([21, 22, 23, 24, 25], bot.info.team);
+const semi1 = (bot) => _.includes([], bot.info.team);
+const semi2 = (bot) => _.includes([], bot.info.team);
+const final = (bot) => _.includes([], bot.info.team);
+
+playerArray = playerArray.filter(all);
 
 var killsStack = [];
 
@@ -33,7 +59,7 @@ class Clash extends React.Component {
     window.ClashInstance = new ClashJS(
       playerArray,
       {},
-      this.handleEvent.bind(this),
+      this.handleEvent.bind(this)
     );
 
     // window.ClashInstance.target.addEventListener("DATA", evt => {
@@ -50,12 +76,13 @@ class Clash extends React.Component {
       clashjs: window.ClashInstance.getState(),
       shoots: [],
       speed: DEFAULT_SPEED,
+      speedOverride: undefined,
       notifications: [],
       currentGameIndex: 1,
       finished: false,
       showStats: false,
     };
-    this.state.sounds ? enableSounds() : disableSounds()
+    this.state.sounds ? enableSounds() : disableSounds();
   }
 
   componentDidMount() {
@@ -67,19 +94,25 @@ class Clash extends React.Component {
         }));
       }
       if (evt.code === "Space") {
-        this.handleToggleRunning()
+        this.handleToggleRunning();
       }
       if (evt.code === "KeyS") {
-        this.handleToggleSounds()
+        this.handleToggleSounds();
       }
       if (evt.code === "KeyM") {
-        this.handleToggleMusic()
+        this.handleToggleMusic();
       }
       if (evt.key === "0") {
-        this.handleChangeSpeed(0)
+        this.handleChangeSpeed(0);
+      }
+      if (evt.key === "1") {
+        this.handleChangeSpeed(100);
+      }
+      if (evt.key === "2") {
+        this.handleChangeSpeed(200);
       }
       if (evt.key === "9") {
-        this.handleChangeSpeed(1000)
+        this.handleChangeSpeed(1000);
       }
     });
   }
@@ -111,11 +144,11 @@ class Clash extends React.Component {
       }),
       () => {
         if (this.state.sounds) {
-          enableSounds()
-          startMusic()
+          enableSounds();
+          startMusic();
         } else {
-          disableSounds()
-          stopMusic()
+          disableSounds();
+          stopMusic();
         }
       }
     );
@@ -130,80 +163,78 @@ class Clash extends React.Component {
       () => {
         if (this.state.music) {
           //  enableSounds()
-          startMusic()
+          startMusic();
         } else {
           //  disableSounds()
-          stopMusic()
+          stopMusic();
         }
       }
     );
   }
 
   handleToggleStats() {
-    this.setState(
-      (prevState) => ({
-        showStats: !prevState.showStats,
-      })
-    );
+    this.setState((prevState) => ({
+      showStats: !prevState.showStats,
+    }));
   }
 
   handleToggleAsteroids() {
-    this.setState(
-      (prevState) => {
-        const newValue = !prevState.asteroidsOn
-        window.ClashInstance.setAsteroidsOn(newValue)
-        return {
-          asteroidsOn: newValue,
-        }
-      }
-    );
+    this.setState((prevState) => {
+      const newValue = !prevState.asteroidsOn;
+      window.ClashInstance.setAsteroidsOn(newValue);
+      return {
+        asteroidsOn: newValue,
+      };
+    });
   }
 
   handleToggleCargo() {
-    this.setState(
-      (prevState) => {
-        const newValue = !prevState.cargoOn
-        window.ClashInstance.setCargoOn(newValue)
-        if (newValue) {
-          return {
-            cargoOn: newValue,
-          }
-        } else {
-          return {
-            cargoOn: newValue,
-            cargos: []
-          }
-        }
+    this.setState((prevState) => {
+      const newValue = !prevState.cargoOn;
+      window.ClashInstance.setCargoOn(newValue);
+      if (newValue) {
+        return {
+          cargoOn: newValue,
+        };
+      } else {
+        return {
+          cargoOn: newValue,
+          cargos: [],
+        };
       }
-    );
+    });
   }
 
   handleChangeSpeed(newSpeed) {
-    // log('handleChangeSpeed', newSpeed)
+    log("handleChangeSpeed", newSpeed);
     this.setState({
-      speed: newSpeed
-    })
+      speedOverride: newSpeed,
+    });
   }
 
-  newGame() {
+  newRound() {
     killsStack = [];
 
     if (this.nextTurnTimeout) clearTimeout(this.nextTurnTimeout);
 
     window.ClashInstance.setupGame();
-    // log('newGame setState')
+    // log('newRound setState')
     this.setState(
       (state) => {
-        // log('newGame setState state', state)
+        // log('newRound setState state', state)
+        const clashjs = window.ClashInstance.getState()
         return {
-          clashjs: window.ClashInstance.getState(),
-          speed: DEFAULT_SPEED,
-          notifications: state.notifications.concat({ date: new Date(), text: '~~~ New Game ~~~' }),
+          clashjs,
+          speed: this.state.speedOverride ?? DEFAULT_SPEED,
+          notifications: state.notifications.concat({
+            date: new Date(),
+            text: (<span style={{color: 'orange'}}>~~~ New Round #{clashjs.rounds} ~~~</span>),
+          }),
           currentGameIndex: state.currentGameIndex + 1,
         };
       },
       () => {
-        // log('newGame setState callback', this.nextTurnTimeout, this.state.clashjs)
+        // log('newRound setState callback', this.nextTurnTimeout, this.state.clashjs)
         if (this.nextTurnTimeout) clearTimeout(this.nextTurnTimeout);
         this.nextTurnTimeout = window.setTimeout(() => {
           this.nextTurn();
@@ -216,9 +247,9 @@ class Clash extends React.Component {
     // log('nextTurn', this.state)
     if (this.state.startTime === undefined) {
       if (this.state.music) {
-        startMusic()
+        startMusic();
       }
-      this.setState({ startTime: Date.now() })
+      this.setState({ startTime: Date.now() });
     }
     if (!this.state.running || this.state.finished) return;
 
@@ -242,13 +273,17 @@ class Clash extends React.Component {
 
       window.ClashInstance.nextPly();
 
+      const calculatedSpeed =
+        this.state.speed > MAX_SPEED
+          ? parseInt(this.state.speed * 0.99, 10)
+          : MAX_SPEED;
+
+      const speed = this.state.speedOverride ?? calculatedSpeed;
+
       this.setState(
         {
           clashjs: window.ClashInstance.getState(),
-          speed:
-            this.state.speed > MAX_SPEED
-              ? parseInt(this.state.speed * 0.99, 10)
-              : MAX_SPEED,
+          speed: speed,
         },
         this.nextTurn
       );
@@ -269,16 +304,30 @@ class Clash extends React.Component {
       });
     }
     if (evt === "WIN") {
-      this.setState(state => ({
-        notifications: state.notifications.concat({ date: new Date(), text: 'WINNER!' })
-      }))
-      return this.newGame()
+      this.setState((state) => ({
+        notifications: state.notifications.concat({
+          date: new Date(),
+          text: (
+            <b style={{ color: "#0e0", fontWeight: 700 }}>
+              {data.winner.name} wins the round!
+            </b>
+          )
+        }),
+      }));
+      return this.newRound();
     }
     if (evt === "DRAW") {
-      this.setState(state => ({
-        notifications: state.notifications.concat({ date: new Date(), text: 'Stalemate' })
-      }))
-      return this.newGame()
+      this.setState((state) => ({
+        notifications: state.notifications.concat({
+          date: new Date(),
+          text: (
+            <b style={{ color: "yellow", fontWeight: 700 }}>
+              Stalemate ¯\_(ツ)_/¯
+            </b>
+          )
+        }),
+      }));
+      return this.newRound();
     }
     if (evt === "KILL") return this._handleKill(data);
     if (evt === "DESTROY") return this._handleDestroy(data);
@@ -311,8 +360,11 @@ class Clash extends React.Component {
       _.map(killed, (player) => player.getName()).join(","),
     ].join(" ");
 
-    this.setState(state => ({
-      notifications: state.notifications.concat({ date: new Date(), text: notification })
+    this.setState((state) => ({
+      notifications: state.notifications.concat({
+        date: new Date(),
+        text: notification,
+      }),
     }));
 
     setImmediate(() => this.handleStreak(data.killer, killer, killed));
@@ -361,9 +413,13 @@ class Clash extends React.Component {
       text: multiKill,
     });
     if (streakCount > 1) {
-      const currentStreak = this.state.clashjs.gameStats[killer.getId()].killStreak
+      const currentStreak = this.state.clashjs.gameStats[killer.getId()]
+        .killStreak;
       // log('killstreak', streakCount, currentStreak, Math.max(streakCount, currentStreak || 0), killsStack)
-      window.ClashInstance._gameStats[killer.getId()].killStreak = Math.max(streakCount, currentStreak || 0)
+      window.ClashInstance._gameStats[killer.getId()].killStreak = Math.max(
+        streakCount,
+        currentStreak || 0
+      );
     }
     switch (streakCount) {
       case 2:
@@ -380,11 +436,11 @@ class Clash extends React.Component {
         break;
       default:
         setTimeout(() => playSound(streaks.ownage), 400);
-        spreeMessage = `Can anyone stop ${killer.getName()}?!?`;
+        spreeMessage = (<i style={{color: 'lightgray'}}>Can anyone stop {killer.getName()}?!?`</i>)
     }
-    notifications.push({ date: new Date(), text: spreeMessage })
+    notifications.push({ date: new Date(), text: spreeMessage });
     this.setState({
-      notifications
+      notifications,
     });
   }
 
@@ -445,14 +501,15 @@ class Clash extends React.Component {
         <Grid
           columns="1fr 100vmin 1fr"
           rows="auto 1fr"
-          areas={[
-            "control game stats",
-            "debug   game notifications",
-          ]}>
+          areas={["control game stats", "debug   game notifications"]}
+        >
           <Cell area="game" onClick={this.handleClick.bind(this)}>
             <div className="clash">
               <Tiles gridSize={gameEnvironment.gridSize} />
-              <Shoots shoots={shoots.slice()} gridSize={gameEnvironment.gridSize} />
+              <Shoots
+                shoots={shoots.slice()}
+                gridSize={gameEnvironment.gridSize}
+              />
               <Ammos
                 gridSize={gameEnvironment.gridSize}
                 ammoPosition={gameEnvironment.ammoPosition}
@@ -491,18 +548,23 @@ class Clash extends React.Component {
               handleToggleCargo={this.handleToggleCargo.bind(this)}
             />
           </Cell>
-          <Cell area="debug">{showDebug && <DebugPanel playerStates={playerStates} />}</Cell>
+          <Cell area="debug">
+            {showDebug && <DebugPanel playerStates={playerStates} />}
+          </Cell>
           <Cell area="stats">
             <Stats
               rounds={rounds}
               total={totalRounds}
-              playerStates={playerStates}
               stats={gameStats}
             />
           </Cell>
-          <Cell area="notifications"><Notifications messages={notifications} /></Cell>
+          <Cell area="notifications">
+            <Notifications messages={notifications} />
+          </Cell>
         </Grid>
-        <StatsModal open={showStats} onClose={() => this.setState({ showStats: false })}
+        <StatsModal
+          open={showStats}
+          onClose={() => this.setState({ showStats: false })}
           rounds={rounds}
           total={totalRounds}
           playerStates={playerStates}
