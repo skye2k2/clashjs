@@ -45,7 +45,7 @@ const semi1 = (bot) => _.includes([], bot.info.team);
 const semi2 = (bot) => _.includes([], bot.info.team);
 const final = (bot) => _.includes([], bot.info.team);
 
-playerArray = playerArray.filter(all);
+playerArray = playerArray.filter(groupA);
 
 var killsStack = [];
 
