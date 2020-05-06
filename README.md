@@ -42,6 +42,8 @@ Now run the app again. Have fun!
 
 Read the [game definitions](#game-definitions) to learn how to create your player. Have fun!
 
+When you are done coding your bot (or the time runs out), create a PR to the `fs-webdev/clashjs` repo with your bot code and the `src/Players.js` file including your bot. **Make sure you PR to the correct `fs-webdev` fork of this project, Github sometimes assigns your PR to another fork by default, so doublecheck.**
+
 # Game. Functional Spec.
 
 ## Introduction.
