@@ -78,20 +78,20 @@ export default {
     }
 
     let thisMove = innerAI(player, enemies, game);
-    if (thisMove === lastMove) {
-      sameMove++;
-    }
-    else {
-      lastMove = thisMove;
-      sameMove = 0;
-    }
-    if (sameMove > 10) {
-      const randMove = makeRandomMove();
-      if (isActionSafe(player, randMove, enemies, game)) {
-        lastMove = thisMove = randMove;
-        sameMove = 0;
-      }
-    }
+    // if (thisMove === lastMove) {
+    //   sameMove++;
+    // }
+    // else {
+    //   lastMove = thisMove;
+    //   sameMove = 0;
+    // }
+    // if (sameMove > 10) {
+    //   const randMove = makeRandomMove();
+    //   if (isActionSafe(player, randMove, enemies, game)) {
+    //     lastMove = thisMove = randMove;
+    //     sameMove = 0;
+    //   }
+    // }
     return thisMove;
   },
 };
