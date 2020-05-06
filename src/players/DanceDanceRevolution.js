@@ -13,8 +13,8 @@ import {
 import debug from "debug";
 const log = debug("clashjs:bot:DanceDanceRevolution");
 
-// const VERTICAL = 0;
-// const HORIZONTAL = 1;
+const VERTICAL = 0;
+const HORIZONTAL = 1;
 const DIRECTIONS = {
   NORTH: "north",
   EAST: "east",
@@ -23,28 +23,28 @@ const DIRECTIONS = {
   ALL: ["north", "east", "south", "west"],
 };
 
-// const findClosestEnemy = function (player, enemies) {
-//   log("Looking for closest enemy");
-//   const sortedEnemies = enemies
-//     .map((enemy) => ({
-//       ...enemy,
-//       distance: calculateDistance(player.position, enemy.position),
-//     }))
-//     .sort((enemy1, enemy2) => enemy1.distance - enemy2.distance);
+const findClosestEnemy = function (player, enemies) {
+  log("Looking for closest enemy");
+  const sortedEnemies = enemies
+    .map((enemy) => ({
+      ...enemy,
+      distance: calculateDistance(player.position, enemy.position),
+    }))
+    .sort((enemy1, enemy2) => enemy1.distance - enemy2.distance);
 
-//   return sortedEnemies[0];
-// }
+  return sortedEnemies[0];
+}
 
-// const EnemyIsInWhichKittyCorner = (player, enemy) => {
-//   let kittyCorner = ''
-//   const verticalDist = player.position[VERTICAL] - enemy.position[VERTICAL]
-//   if (verticalDist === 1) kittyCorner += 'N'
-//   if (verticalDist === -1) kittyCorner += 'S'
-//   const horizontalDist = Math.abs(player.position[HORIZONTAL] - enemy.position[HORIZONTAL])
-//   if (horizontalDist === -1) kittyCorner += 'E'
-//   if (horizontalDist === 1) kittyCorner += 'W'
-//   return kittyCorner
-// }
+const EnemyIsInWhichKittyCorner = (player, enemy) => {
+  let kittyCorner = ''
+  const verticalDist = player.position[VERTICAL] - enemy.position[VERTICAL]
+  if (verticalDist === 1) kittyCorner += 'N'
+  if (verticalDist === -1) kittyCorner += 'S'
+  const horizontalDist = Math.abs(player.position[HORIZONTAL] - enemy.position[HORIZONTAL])
+  if (horizontalDist === -1) kittyCorner += 'E'
+  if (horizontalDist === 1) kittyCorner += 'W'
+  return kittyCorner
+}
 
 export default {
   info: {
@@ -59,14 +59,12 @@ export default {
 
     // Check if we are in immediate danger, if so try to move
     if (enemiesWithUsInSight.length > 0) {
-      console.log("In danger! Lets try to move");
+      log("In danger! Lets try to move");
 
       // if we're facing them too, shoot!
       if (player.ammo > 0) {
-        console.log('I\'m in danger, but will shoot to defend myself')
         for (let enemy of enemiesWithUsInSight) {
           if (isTargetVisible(player.position, player.direction, enemy.position)) {
-            console.log('Die!')
             return 'shoot'
           }
         }
@@ -74,13 +72,12 @@ export default {
 
       // Do this if it brings us to safety
       if (canMoveForward(player, game) && isSafeToMove) {
-        console.log('Go to safety!')
         return "move";
       }
 
       // if we're facing opposite of them, turn to the side to prepare to escape
       if (enemiesWithUsInSight.length) {
-        console.log('Move to the side!')
+        log('Move to the side!')
         const enemyDir = enemiesWithUsInSight[0].direction
         if ([DIRECTIONS.NORTH, DIRECTIONS.SOUTH].includes(enemyDir)) {
           const chooseTheRight = isActionSafe(player, DIRECTIONS.EAST, enemies, game)
@@ -97,7 +94,7 @@ export default {
     // Not in danger, so lets see if we can shoot somebody
     const targets = enemiesInRange(player, enemies);
     if (player.ammo > 0 && targets.length > 0) {
-      console.log("Found someone to shoot", targets);
+      log("Found someone to shoot", targets);
       return "shoot";
     }
 
@@ -106,43 +103,43 @@ export default {
       if (isTargetVisible(player.position, player.direction, game.ammoPosition)) {
         for (let enemy of enemiesWithUsInSight) {
           if (isTargetVisible(player.position, player.direction, enemy.position)) {
-            console.log('They fell for our bait. SHOOT!')
+            log('They fell for our bait. SHOOT!')
             return 'shoot'
           }
         }
-        console.log('Sniping with ammo as bait')
+        log('Sniping with ammo as bait')
         return null;
       }
 
       // Start the hunt!
-      // const closestEnemy = findClosestEnemy(player, enemies)
-      // console.log(closestEnemy, player)
-      // const closestEnemyDir = calculateHeading(player.position, closestEnemy.position)
-      // log('Hunt down closest enemy!', closestEnemy.name);
-      // if (closestEnemyDir === player.direction && isSafeToMove) {
-      //   console.log('Wait for enemy to get in sight or move closer')
-      //   const kittyCorner = EnemyIsInWhichKittyCorner(player, closestEnemy)
-      //   switch (kittyCorner) {
-      //     case 'NE':
+      const closestEnemy = findClosestEnemy(player, enemies)
+      console.log(closestEnemy, player)
+      const closestEnemyDir = calculateHeading(player.position, closestEnemy.position)
+      log('Hunt down closest enemy!', closestEnemy.name);
+      if (closestEnemyDir === player.direction && isSafeToMove) {
+        console.log('Wait for enemy to get in sight or move closer')
+        const kittyCorner = EnemyIsInWhichKittyCorner(player, closestEnemy)
+        switch (kittyCorner) {
+          case 'NE':
 
-      //       // TODO: Face direction that enemy is likely to move into
-      //       break;
-      //     case 'NE':
+            // TODO: Face direction that enemy is likely to move into
+            break;
+          case 'NE':
 
-      //       break;
-      //     case 'NE':
+            break;
+          case 'NE':
 
-      //       break;
-      //     case 'NE':
+            break;
+          case 'NE':
 
-      //       break;
-      //     default:
-      //       return "move";
-      //   }
-      // } else {
-      //   console.log('Face enemy direction')
-      //   return closestEnemyDir;
-      // }
+            break;
+          default:
+            return "move";
+        }
+      } else {
+        console.log('Face enemy direction')
+        return closestEnemyDir;
+      }
     }
 
     // Not in danger, nobody to shoot, lets go collect more ammo
