@@ -184,6 +184,18 @@ const oppositeDirection = function (direction) {
   }
 };
 
+const willIDie = (player, game, enemies) => {
+  if (canMoveForward(player, game)) {
+    const newPosition = calculateNewPosition(player, game);
+    player.position = newPosition;
+    const futureThreats = threatsFacingMe(player, enemies);
+    if (futureThreats.length > 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 module.exports = {
   makeRandomMove,
   sameColumn,
@@ -199,4 +211,5 @@ module.exports = {
   findClosestAmmo,
   isActionSafe,
   oppositeDirection,
+  willIDie,
 };
