@@ -140,7 +140,7 @@ Any other response, trying to move outside the arena size (`game.gridSize`) or t
 All positions in the game are in a 2 item array: `[verticalOffset, horizontalOffset]` from upper left corner, zero indexed, so essentially `[Y, X]` except in the 4th quadrant so Y increases as you go down the board.
 
 ### Player State.
-Let the *player state* (`playerState`) be an object with a player information like the following:
+The *player state* (`player`) is an object containing the following information:
 
 ```js
 {
