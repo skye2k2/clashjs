@@ -90,7 +90,7 @@ export default {
   info: {
     name: "fuzzypuppy",
     style: 110,
-    team: 1,
+    team: 4,
   },
   ai: function (player, enemies, game) {
     log("Executing my AI function", player, enemies, game);
