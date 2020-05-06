@@ -1,5 +1,5 @@
 module.exports = {
+  superbeam: require("./players/superbeam"),
   starterbot: require("./players/starterbot"),
-  random: require("./players/randombot"),
-  // beasty: require("./players/beasty"),
+  random: require("./players/randombot")
 };
