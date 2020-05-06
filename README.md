@@ -270,7 +270,7 @@ This javascript class will recive a `playerDefinition` and return a player insta
     * `enemiesStates`. An array all the other live players `playerState`s.
     * [`gameEnvironment`](#game-environment). The game environment object.
 
-## CashJS Class.
+## ClashJS Class.
 
 This class will receive all the player definitions, generate the game states, and execute the players AIs.
 
