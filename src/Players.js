@@ -1,4 +1,5 @@
 module.exports = {
+  ET: require("./players/ET"),
   starterbot: require("./players/starterbot"),
   random: require("./players/randombot"),
   tRexBot: require("./players/tRexBot"),
