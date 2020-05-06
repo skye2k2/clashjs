@@ -135,7 +135,7 @@ The AI function will receive [`player`](#player-state), `enemies` (array of all 
   * `north`, `east`, `south` or `west`: To turn to that direction.
   * `shoot`. To shoot if the user has enough ammo.
 
-Any other response, trying to move outside the arena size (`game.gridSize`) or trying to shoot without ammo, will result in a no-op.
+Any other response, trying to move outside the arena size (`game.gridSize`) or trying to shoot without ammo, will result in a no-op and your turn is skipped. If you throw an exception in your `ai` function your turn will be skipped.
 
 All positions in the game are in a 2 item array: `[verticalOffset, horizontalOffset]` from upper left corner, zero indexed, so essentially `[Y, X]` except in the 4th quadrant so Y increases as you go down the board.
 
