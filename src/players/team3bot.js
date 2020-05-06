@@ -12,7 +12,7 @@ const log = debug("clashjs:bot:starterbot");
 
 export default {
   info: {
-    name: "starterbot",
+    name: "team3bot",
     style: 20,
     team: 1,
   },
