@@ -16,6 +16,7 @@ module.exports = {
   ET: require("./players/ET"),
   starterbot: require("./players/starterbot"),
   random: require("./players/randombot"),
+  theDestiny: require("./players/theDestiny"),
   jakob: require("./players/jakobbot"),
   tRexBot: require("./players/tRexBot"),
   team24: require("./players/team24"),
