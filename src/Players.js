@@ -4,4 +4,5 @@ module.exports = {
   // beasty: require("./players/beasty"),
   rumba: require("./players/rumba"),
   shootermcgavin: require('./players/shootermcgavin'),
+  neinobot: require('./players/neinobot')
 }
