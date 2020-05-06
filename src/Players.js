@@ -1,5 +1,5 @@
 module.exports = {
   starterbot: require("./players/starterbot"),
-  random: require("./players/randombot"),
+  DanceDanceRevolution: require("./players/DanceDanceRevolution"),
   // beasty: require("./players/beasty"),
 };
