@@ -16,7 +16,7 @@ export default {
     style: 20,
     team: 1,
   },
-  ai: function (player, enemies, game) {
+  ai: function (player, enemies, game) {//
     log("Executing my AI function", player, enemies, game);
 
     // Check if we are in immediate danger, if so try to move
