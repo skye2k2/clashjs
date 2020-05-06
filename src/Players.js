@@ -12,6 +12,7 @@ module.exports = {
   dilbert: require("./players/dilbert"),
   // beasty: require("./players/beasty"),
   shootermcgavin: require('./players/shootermcgavin'),
+  neinobot: require('./players/neinobot')
   somethingIntimidating: require("./players/somethingIntimidating"),
   superbeam: require("./players/superbeam"),
   team18: require("./players/team18"),
