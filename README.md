@@ -84,7 +84,7 @@ The is a rocket icon which shows all of the 110 rocket/spaceship styles that are
 
 There are 3 bots provided in the game: `randombot`, `starterbot`, and `beasty` (in `/src/players/`, plus your copy of `starterbot` that you will modify. Beasty is a more advanced bot and we have obfuscated the code. You can learn from it's behavior by observing it play, but please don't copy or go looking for the source to put into your bot. Do all of your own coding and logic/strategy. You can add/remove bots from the game by commenting them in and out in `/src/Players.js`. Do not modify the code of any of the existing bots, just your bot.
 
-When running the game, there are some tools to help you debug your bot and it's data. We have provided the `debug` library and a namespace of `clashjs:bot:`. You can enable logging in your bot and some basic game logging by enabling this namespace by typing this command into the dev tools console:
+When running the game, there are some tools to help you debug your bot and it's data. We have provided the [`debug`](https://www.npmjs.com/package/debug) library and a namespace of `clashjs:bot:`. You can enable logging in your bot and some basic game logging by enabling this namespace by typing this command into the dev tools console:
 
 ```
 localStorage.debug='clashjs:bot:*'
