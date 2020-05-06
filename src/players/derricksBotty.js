@@ -18,7 +18,6 @@ const calculateDistance = ([startY = 0, startX = 0], [endY = 0, endX = 0]) =>
 
 const findClosestPlayer = function (player, enemies) {
   log("### ammo, player, game", player);
-  console.log(enemies)
   const sortedPlayers = enemies.reduce((arr, nextPlayer) => {
     arr.push(nextPlayer.position)
     return arr
@@ -72,17 +71,15 @@ export default {
       log("Found someone to shoot", targets);
       return "shoot";
     }
-
+    const closestPlayer = findClosestPlayer(player, enemies);
     //If we have ammo try to hunt someone down
     if(player.ammo){
-      const closestPlayer = findClosestPlayer(player, enemies);
-
       if (closestPlayer) {
         log("Found a player", closestPlayer);
         const playerDir = calculateHeading(player.position, closestPlayer);
 
-        log("Heading towards ammo", playerDir);
-        if (playerDir === player.direction) {
+        log("Heading towards player", playerDir);
+        if (playerDir === player.direction && isActionSafe(player, 'move', enemies, game)) {
           return "move";
         } else {
           return playerDir;
@@ -98,15 +95,20 @@ export default {
       const ammoDir = calculateHeading(player.position, closestAmmo);
 
       log("Heading towards ammo", ammoDir);
-      if (ammoDir === player.direction) {
+      if (ammoDir === player.direction && isActionSafe(player, 'move', enemies, game)) {
         return "move";
       } else {
         return ammoDir;
       }
     }
 
+    if (!canMoveForward(player, game)) {
+      return oppositeDirection(player.direction)
+    }
+
     // Nothing else to do ... lets just make a random move
     log("Bummer, found nothing interesting to do ... making random move");
+    console.log('rando')
     return makeRandomMove();
   },
 };
