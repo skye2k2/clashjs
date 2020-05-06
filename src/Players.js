@@ -1,5 +1,8 @@
 module.exports = {
   starterbot: require("./players/starterbot"),
+  // random: require("./players/randombot"),
+  // beasty: require("./players/beasty"),
+  myTeamBot: require("./players/team19Bot")
   DanceDanceRevolution: require("./players/DanceDanceRevolution"),
   random: require('./players/randombot'),
   rumba: require("./players/rumba"),
