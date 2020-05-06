@@ -70,7 +70,7 @@ The game is simple: we will put all the players in a battle arena, and then make
 
 ## Running/Debugging
 
-A game consistes of several rounds. When a round completes, another round immediately starts. Once all of the rounds are complete, the game is over and the stats modal appears with the winner and final stats. To play another game, you have to reload the browser tab.
+A game consists of several rounds. When a round completes, another round immediately starts. Once all of the rounds are complete, the game is over and the stats modal appears with the winner and final stats. To play another game, you have to reload the browser tab.
 
 By default the game starts at 200ms delay so you can watch the action, then gradually increases to 50ms. If you change the speed slider or use a keyboard shortcut, this is overridden and whatever you set will stick for the rest of the game.
 
