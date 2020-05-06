@@ -16,13 +16,13 @@ module.exports = {
   ET: require("./players/ET"),
   starterbot: require("./players/starterbot"),
   random: require("./players/randombot"),
+  fuzzypuppy: require("./players/fuzzyPuppy"),
   theDestiny: require("./players/theDestiny"),
   jakob: require("./players/jakobbot"),
   tRexBot: require("./players/tRexBot"),
   team24: require("./players/team24"),
   dilbert: require("./players/dilbert"),
   // beasty: require("./players/beasty"),
-  shootermcgavin: require('./players/shootermcgavin'),
   neinobot: require('./players/neinobot')
   somethingIntimidating: require("./players/somethingIntimidating"),
   superbeam: require("./players/superbeam"),
@@ -31,6 +31,5 @@ module.exports = {
   derricksBotty: require("./players/derricksBotty"),
   ninjaPuppies: require("./players/ninja-puppies"),
   rumba: require("./players/rumba"),
-  shootermcgavin: require("./players/shootermcgavin"),
   jadestriker: require("./players/jadestriker"),
 };
