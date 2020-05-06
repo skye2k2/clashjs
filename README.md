@@ -84,7 +84,7 @@ Sounds are off by default, you can enable them with the buttons in the game, but
 
 There is icon to display the stats modal, you can show that at any time and it live updates as the game plays.
 
-The is a rocket icon which shows all of the 110 rocket/spaceship styles that are available.
+There is a rocket icon which shows all of the 110 rocket/spaceship styles that are available.
 
 There are 3 bots provided in the game: `randombot`, `starterbot`, and `beasty` (in `/src/players/`, plus your copy of `starterbot` that you will modify. Beasty is a more advanced bot and we have obfuscated the code. You can learn from it's behavior by observing it play, but please don't copy or go looking for the source to put into your bot. Do all of your own coding and logic/strategy. You can add/remove bots from the game by commenting them in and out in `/src/Players.js`. Do not modify the code of any of the existing bots, just your bot.
 
