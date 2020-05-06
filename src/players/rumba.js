@@ -49,7 +49,7 @@ export default {
   info: {
     name: "Rumba",
     style: 7,
-    team: 1,
+    team: 12,
   },
   ai: function (player, enemies, game) {
     const modes = [
