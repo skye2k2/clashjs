@@ -67,6 +67,7 @@ export default {
       let closestBadGuyPos = findClosestEnemy(player, enemies)
 
       // find closest enemy, shoot if possible
+
       let counter = 0
       while (closestBadGuyPos) {
         const enemyDirection = calculateHeading(player.position, closestBadGuyPos)
