@@ -3,6 +3,7 @@ module.exports = {
   random: require("./players/randombot"),
   dilbert: require("./players/dilbert"),
   // beasty: require("./players/beasty"),
+  superbeam: require("./players/superbeam"),
   team18: require("./players/team18"),
   alwaysAngry: require('./players/alwaysAngry'),
   derricksBotty: require("./players/derricksBotty"),
