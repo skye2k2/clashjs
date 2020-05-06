@@ -120,7 +120,7 @@ Let the *player definition* (`playerDefinition`) be an object with the player in
 {
   info: {
     name: 'starterbot',
-    style: 2, // one of the 111 styles (0 to 110) see Rocket icon in game for list of styles
+    style: 20, // one of the 111 styles (0 to 110) available. Click the Rocket icon in game for a catalog of all of the styles
     team: 1, // team number assigned to your team
   },
   ai: function(player, enemies, game) {
