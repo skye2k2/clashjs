@@ -97,9 +97,9 @@ export default {
 
     function checkForDanger(){
       if(isActionSafe(player, futureAction, enemies, game)){
-        return true;
+        return futureAction;
       }else{
-        return false;
+        return '';
       }
     }
 
