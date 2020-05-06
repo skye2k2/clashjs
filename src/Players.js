@@ -10,5 +10,6 @@ module.exports = {
   derricksBotty: require("./players/derricksBotty"),
   ninjaPuppies: require("./players/ninja-puppies"),
   rumba: require("./players/rumba"),
-  shootermcgavin: require('./players/shootermcgavin'),
-}
+  shootermcgavin: require("./players/shootermcgavin"),
+  jadestriker: require("./players/jadestriker"),
+};
