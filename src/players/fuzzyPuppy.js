@@ -97,9 +97,9 @@ export default {
 
     function checkForDanger(){
       if(isActionSafe(player, futureAction, enemies, game)){
-        return futureAction;
+        return true;
       }else{
-        futureAction = "";
+        return false;
       }
     }
 
@@ -160,10 +160,11 @@ export default {
           }
         }
         if(potentialDanger > 0){
-          return 'move'
+          console.log('figured')
+          return 'west'
         }
     }   
-    calculateClosestSafeZone()
+    //calculateClosestSafeZone()
 /*
     // Move to edges and corners to minimize vulnerable angles
     var farEdge = (game.gridSize)-1; //integer
@@ -177,10 +178,10 @@ export default {
     switch(direction){
       case 0: closestEdge = "north";
       case 1: closestEdge = "east";
-      case 2: clos"south"
-      case 3: "west"
+      case 2: closestEdge = "south";
+      default: closestEdge = "west";
     }
-    var facing = player.facing;
+    
 */
     
 
