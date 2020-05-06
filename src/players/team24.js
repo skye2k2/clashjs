@@ -79,6 +79,13 @@ export default {
             let target;
             if (onesWithNoAmo.length > 0) {
                 target = onesWithNoAmo[0];
+            } else {
+                const anyone = enemies.filter((enemy)=>{
+                    return  enemy.isAlive;
+                }) 
+                if (anyone.length > 0) {
+                    target  = anyone[0];
+                }
             }
             if (target) {
                 const targetDir = calculateHeading(player.position, target.position);
