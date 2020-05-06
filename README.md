@@ -12,17 +12,18 @@ Clone the repo and then
 
 ```sh
 npm install
-npm build
 npm start
 ```
 
 Then go to `http://localhost:3000`.
 
 # How to participate.
-Add your player as specificed in [player definition](#player-definition) in
+Add your player as specified in the [player definition](#player-definition) in
+
+Make a copy of `/src/players/starterbot.js` and rename it to whatever your team wants to call it.
 
 ```
-/src/players/YOU.js
+/src/players/myteambot.js
 ```
 
 And then require yourself in
@@ -31,7 +32,13 @@ And then require yourself in
 /src/Players.js
 ```
 
-And run the demo again. Have fun!
+Change the `info.name` property to whatever you want (but stay about 20 characters max, emojis are okay).
+Change the `info.team` property to the team number assigned to your team
+[Optional] Set the `info.style` property to the number of the rocket/spaceship style that you like. You can see all 110 styles in the game by clicking the Rocket icon. The style number is **above** the rocket/spaceship.
+
+__Note__: If you do not provide a name or a style, the game will automatically assign you a name and a rocket/spaceship style.
+
+Now run the app again. Have fun!
 
 Read the [game definitions](#game-definitions) to learn how to create your player. Have fun!
 
@@ -55,7 +62,54 @@ The game is simple: we will put all the players in a battle arena, and then make
   * Turn into any of the four directions. (`north`, `east`, `south`, `west`).
   * Shoot. (`shoot`).
 * A player can shoot to try to destroy another player.
-* A player can collect ammo in the moment it steps over it. A new ammo may appear in any moment of the game. If ammo appears on your square, you will not collect it unless you move off and back on.
+* A player can collect ammo in the moment it enters the square containing the ammo. New ammo may appear in any moment of the game. If ammo appears on your square, you will not collect it unless you move off and back on.
+
+**Note**: Please do not try and hack or break the game. There are ways to cheat and modify the game state or other players (not through the objects given to your `ai` function, but other means). We will try to review the bots as you PR them in, but please just stay within the rules.
+
+**Note**: We also ask that your team do all of your own coding. We have given you a basic starter bot and a helpers library with various helper functions. Please do not go find code from other bots and copy them into your bot code.
+
+## Running/Debugging
+
+A game consistes of several rounds. When a round completes, another round immediately starts. Once all of the rounds are complete, the game is over and the stats modal appears with the winner and final stats. To play another game, you have to reload the browser tab.
+
+By default the game starts at 200ms delay so you can watch the action, then gradually increases to 50ms. If you change the speed slider or use a keyboard shortcut, this is overridden and whatever you set will stick for the rest of the game.
+
+Sounds are off by default, you can enable them with the buttons in the game, but be warned they can be loud so check your volume first.
+
+There is icon to display the stats modal, you can show that at any time and it live updates as the game plays.
+
+The is a rocket icon which shows all of the 110 rocket/spaceship styles that are available.
+
+There are 3 bots provided in the game: `randombot`, `starterbot`, and `beasty` (in `/src/players/`, plus your copy of `starterbot` that you will modify. Beasty is a more advanced bot and we have obfuscated the code. You can learn from it's behavior by observing it play, but please don't copy or go looking for the source to put into your bot. Do all of your own coding and logic/strategy. You can add/remove bots from the game by commenting them in and out in `/src/Players.js`. Do not modify the code of any of the existing bots, just your bot.
+
+When running the game, there are some tools to help you debug your bot and it's data. We have provided the `debug` library and a namespace of `clashjs:bot:`. You can enable logging in your bot and some basic game logging by enabling this namespace by typing this command into the dev tools console:
+
+```
+localStorage.debug='clashjs:bot:*'
+```
+To turn off debugging:
+```
+localStorage.debug=''
+```
+
+There is also a debug panel that displays on the left side of the screen with json of the player states that you can toggle with the `d` key. This also turns bot names red when they have ammo and shows how much ammo they have.
+
+### Keyboard shortcuts
+
+Pause/Resume the game: `spacebar`
+
+Show/hide the debug panel and info: `d`
+
+Speed controls:
+* `0` - 0ms delay -- fastest speed
+* `1` - 100ms delay
+* `2` - 200ms delay
+* `9` - 1000ms delay -- slowest speed
+
+Sounds/Music:
+* `s` - toggle sounds on/off
+* `m` - toggle music soundtrack on/off
+
 
 ## Game Definitions.
 
@@ -65,24 +119,25 @@ Let the *player definition* (`playerDefinition`) be an object with the player in
 ```js
 {
   info: {
-    name: 'javierbyte',
-    style: 2 // one of the 111 styles (0 to 110) see Rocket icon in game for list of styles
+    name: 'starterbot',
+    style: 2, // one of the 111 styles (0 to 110) see Rocket icon in game for list of styles
+    team: 1, // team number assigned to your team
   },
-  ai: function(playerState, enemiesStates, gameEnvironment) {
+  ai: function(player, enemies, game) {
     // think...
-    return 'move';
+    return 'move'; // or some other action
   }
 }
 ```
 
-The AI function will receive [`playerState`](#player-state), `enemiesStates` (array of all the other players `playerState`s), and [`gameEnvironment`](#game-environment) as arguments, and must return one of the following strings:
+The AI function will receive [`player`](#player-state), `enemies` (array of all the other players `playerState`s), and [`game`](#game-environment) as arguments, and must return one of the following strings:
   * `move`: To move one tile in the current direction.
   * `north`, `east`, `south` or `west`: To turn to that direction.
   * `shoot`. To shoot if the user has enough ammo.
 
-Any other response, trying to move outside the arena size (`gameEnvironment.gridSize`) or trying to shoot without ammo, will result in a no-op.
+Any other response, trying to move outside the arena size (`game.gridSize`) or trying to shoot without ammo, will result in a no-op.
 
-All positions in the game are in a 2 item array: `[verticalOffset, horizontalOffset]` from upper left corner, zero indexed, so essential `[Y, X]`
+All positions in the game are in a 2 item array: `[verticalOffset, horizontalOffset]` from upper left corner, zero indexed, so essentially `[Y, X]` except in the 4th quadrant so Y increases as you go down the board.
 
 ### Player State.
 Let the *player state* (`playerState`) be an object with a player information like the following:
@@ -169,7 +224,7 @@ The AI runner should execute all the functions that the players provided, with t
 * Detect if any functions gets stuck in an infinite loop, and return `null` as response.
 
 ## Hypothesis.
-We can run the functions as WebWorkers because:
+In the future, we could run the functions as WebWorkers because:
 * They can not access the dom and modify things.
 * Runs in a sandbox. If they crash or stop responding we can detect it.
 * Bonus: We can parallelise the excecution.
