@@ -18,7 +18,7 @@ npm start
 Then go to `http://localhost:3000`.
 
 # How to participate.
-Add your player as specified in the [player definition](#player-definition) in
+Add your player as specified in the [player definition](#player-definition) below in this README.
 
 Make a copy of `/src/players/starterbot.js` and rename it to whatever your team wants to call it.
 
@@ -36,7 +36,7 @@ Change the `info.name` property to whatever you want (but stay about 20 characte
 Change the `info.team` property to the team number assigned to your team
 [Optional] Set the `info.style` property to the number of the rocket/spaceship style that you like. You can see all 110 styles in the game by clicking the Rocket icon. The style number is **above** the rocket/spaceship.
 
-__Note__: If you do not provide a name or a style, the game will automatically assign you a name and a rocket/spaceship style.
+__Note__: If you do not provide a name or a style, the game will randomly assign you a name and a rocket/spaceship style.
 
 Now run the app again. Have fun!
 
@@ -51,7 +51,7 @@ The game is simple: we will put all the players in a battle arena, and then make
 
 ### Game Rules.
 * Every player will have a position and direction on the grid. A player can not go over the grid limits, and can only face north, east, south or west.
-* The game will be turn based. Every turn we will excecute the AI of every player passing as arguments:
+* The game will be turn based. Every turn we will execute the AI function of every alive player passing as arguments:
   * The state of the player.
   * The state of all other players.
   * A environment configuration option with:
@@ -61,7 +61,7 @@ The game is simple: we will put all the players in a battle arena, and then make
   * Move one step in its current direction. (`move`).
   * Turn into any of the four directions. (`north`, `east`, `south`, `west`).
   * Shoot. (`shoot`).
-* A player can shoot to try to destroy another player.
+* A player can shoot to try to destroy another player. If you send `shoot` and don't have ammo, it will no-op and waste your turn. Shooting impacts every enemy in front of you. If an enemy is on your same square, they will not be shot. But every enemy ahead of you for the entire remaining row or column will be killed in the direction you are facing.
 * A player can collect ammo in the moment it enters the square containing the ammo. New ammo may appear in any moment of the game. If ammo appears on your square, you will not collect it unless you move off and back on.
 
 **Note**: Please do not try and hack or break the game. There are ways to cheat and modify the game state or other players (not through the objects given to your `ai` function, but other means). We will try to review the bots as you PR them in, but please just stay within the rules.
