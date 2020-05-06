@@ -23,7 +23,7 @@ const SHOOT = "shoot";
 
 export default {
   info: {
-    name: "AwesomeSauce",
+    name: "RabidDog",
     style: 94,
     team: 25,
   },
