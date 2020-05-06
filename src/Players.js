@@ -4,6 +4,8 @@ module.exports = {
   team24: require("./players/team24"),
   dilbert: require("./players/dilbert"),
   // beasty: require("./players/beasty"),
+  shootermcgavin: require('./players/shootermcgavin'),
+  somethingIntimidating: require("./players/somethingIntimidating"),
   superbeam: require("./players/superbeam"),
   team18: require("./players/team18"),
   alwaysAngry: require('./players/alwaysAngry'),
