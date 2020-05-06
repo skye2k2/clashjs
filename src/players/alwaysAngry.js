@@ -7,7 +7,6 @@ import {
   calculateNewPosition,
   isTargetVisible,
   enemiesInRange,
-  threats,
   threatsFacingMe,
   canMoveForward,
   findClosestAmmo,
@@ -26,12 +25,19 @@ export default {
   },
   ai: function (player, enemies, game) {
     log("Executing my AI function", player, enemies, game);
-
+    
     // Check if we are in immediate danger, if so try to move
-    if (th1reatsFacingMe(player, enemies).length > 0) {
-      log("In danger! Lets try to move");
-      if (canMoveForward(player, game)) {
-        return "move";
+    // can I kill?
+    const threats = threatsFacingMe(player, enemies)
+    if (threats.length > 0) {
+      const anyInLine = enemiesInRange(player, threats)
+      const isSafeToShoot = isActionSafe(player, "shoot", enemies, game)
+      const isSafeToMove = isActionSafe(player, "move", enemies, game)
+      if(player.ammo && anyInLine && !isSafeToMove) {
+        return "shoot"
+      }
+      if(!isSafeToShoot && isSafeToMove && canMoveForward(player, game)) {
+        return "move"
       }
     }
 
@@ -43,14 +49,17 @@ export default {
     }
 
     // Not in danger, nobody to shoot, lets go collect more ammo
+    // when ammo is found, see if the ammo is contested. if so, who will get there first?
+    // if not us, do we have ammo? get in range to shoot the space where the ammo is
+    // if us, go get the ammo
     const closestAmmo = findClosestAmmo(player, game);
 
     if (closestAmmo) {
       log("Found some ammo", closestAmmo);
       const ammoDir = calculateHeading(player.position, closestAmmo);
-
+      const isSafe = isActionSafe(player, ammoDir, enemies, game)
       log("Heading towards ammo", ammoDir);
-      if (ammoDir === player.direction) {
+      if (isSafe && ammoDir === player.direction) {
         return "move";
       } else {
         return ammoDir;
