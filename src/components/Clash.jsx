@@ -45,7 +45,7 @@ const semi1 = (bot) => _.includes([], bot.info.team);
 const semi2 = (bot) => _.includes([], bot.info.team);
 const final = (bot) => _.includes([], bot.info.team);
 
-playerArray = playerArray.filter(all);
+playerArray = playerArray.filter(groupA);
 
 var killsStack = [];
 
@@ -222,13 +222,17 @@ class Clash extends React.Component {
     this.setState(
       (state) => {
         // log('newRound setState state', state)
-        const clashjs = window.ClashInstance.getState()
+        const clashjs = window.ClashInstance.getState();
         return {
           clashjs,
           speed: this.state.speedOverride ?? DEFAULT_SPEED,
           notifications: state.notifications.concat({
             date: new Date(),
-            text: (<span style={{color: 'orange'}}>~~~ New Round #{clashjs.rounds} ~~~</span>),
+            text: (
+              <span style={{ color: "orange" }}>
+                ~~~ New Round #{clashjs.rounds} ~~~
+              </span>
+            ),
           }),
           currentGameIndex: state.currentGameIndex + 1,
         };
@@ -311,7 +315,7 @@ class Clash extends React.Component {
             <b style={{ color: "#0e0", fontWeight: 700 }}>
               {data.winner.name} wins the round!
             </b>
-          )
+          ),
         }),
       }));
       return this.newRound();
@@ -324,7 +328,7 @@ class Clash extends React.Component {
             <b style={{ color: "yellow", fontWeight: 700 }}>
               Stalemate ¯\_(ツ)_/¯
             </b>
-          )
+          ),
         }),
       }));
       return this.newRound();
@@ -436,7 +440,11 @@ class Clash extends React.Component {
         break;
       default:
         setTimeout(() => playSound(streaks.ownage), 400);
-        spreeMessage = (<i style={{color: 'lightgray'}}>Can anyone stop {killer.getName()}?!?`</i>)
+        spreeMessage = (
+          <i style={{ color: "lightgray" }}>
+            Can anyone stop {killer.getName()}?!?`
+          </i>
+        );
     }
     notifications.push({ date: new Date(), text: spreeMessage });
     this.setState({
@@ -551,17 +559,12 @@ class Clash extends React.Component {
           <Cell area="debug">
             {showDebug && <DebugPanel playerStates={playerStates} />}
           </Cell>
-          <Cell area="stats">
-            <Stats
-              rounds={rounds}
-              total={totalRounds}
-              stats={gameStats}
-            />
-          </Cell>
+          <Cell area="stats"></Cell>
           <Cell area="notifications">
             <Notifications messages={notifications} />
           </Cell>
         </Grid>
+        <Stats rounds={rounds} total={totalRounds} stats={gameStats} />
         <StatsModal
           open={showStats}
           onClose={() => this.setState({ showStats: false })}
