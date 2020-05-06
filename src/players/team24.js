@@ -67,15 +67,38 @@ export default {
         // Hunt if have ammo
         if (player.ammo > 0) {
             const potentialQuickHits = enemies.filter((enemy)=>{
-                return  enemy.isAlive && (sameColumn(player.position, enemy.position) || sameRow(player.position, enemy.position) ) //is alive , sameColumn, sameRow
+                return  enemy.isAlive && (sameColumn(player.position, enemy.position) || sameRow(player.position, enemy.position) )
             })
             if (potentialQuickHits.length > 0) {
                 return calculateHeading(player.position, potentialQuickHits[0].position)
             }
+            
+            const onesWithNoAmo = enemies.filter((enemy)=>{
+                return  enemy.isAlive && enemy.ammo === 0;
+            })
+            let target;
+            if (onesWithNoAmo.length > 0) {
+                target = onesWithNoAmo[0];
+            }
+            if (target) {
+                const targetDir = calculateHeading(player.position, target.position);
+                if (targetDir === player.direction){
+                    if (isActionSafe(player, targetDir, enemies, game)) {
+                        return "move";
+                    }
+                } else {
+                    return targetDir;
+                }
+            }
             //
             // if the enemy is on next row or column wait for them/turn towards them
-            // Overal
-        } // If no ammo, and someone is next to us
+
+            // Overlapped
+            
+            
+        } else {
+            
+        }// If no ammo, and someone is next to us, Enter run away mode
 
 
         // Question: What if another enemy is closer to the ammo?
@@ -89,7 +112,7 @@ export default {
             log("Heading towards ammo", ammoDir);
             if (ammoDir === player.direction){
                 //If the next move towards ammo is safe to do then move, else stay (Maybe 2 rounds then try a different direction)
-                if (isActionSafe(player, ammoDir, enemies, game).length === 0){
+                if (isActionSafe(player, ammoDir, enemies, game)) {
                     return "move";
                 } else {
                     //TODO: Go the a random direction
@@ -103,6 +126,10 @@ export default {
         // Question: should we make a defensive move or an offensive move?
         // Nothing else to do ... lets just make a random move
         log("Bummer, found nothing interesting to do ... making random move");
-        return makeRandomMove();
+        const randomMove = makeRandomMove();
+        if (isActionSafe(player, randomMove, enemies, game)) {
+            return randomMove
+        }
+        return null;
     },
 };
