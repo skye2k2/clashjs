@@ -1,6 +1,7 @@
 module.exports = {
   starterbot: require("./players/starterbot"),
   random: require("./players/randombot"),
+  team24: require("./players/team24"),
   dilbert: require("./players/dilbert"),
   // beasty: require("./players/beasty"),
   superbeam: require("./players/superbeam"),
